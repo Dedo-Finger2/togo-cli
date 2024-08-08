@@ -70,6 +70,9 @@ func createToGoList() {
 		panic(err)
 	}
 
+	// Create json id storage file
+	createJsonIdStorageFile()
+
 	// Closes the file at the end of the func
 	defer file.Close()
 
@@ -78,6 +81,28 @@ func createToGoList() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func createJsonIdStorageFile() {
+	// Get current user
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	// Creates output path
+	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
+
+	// Create json file
+	file, err := os.Create(filepath.Join(outputPath, "ids.json"))
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	// Insert id 0
+	file.WriteString(`{ "id": 0 }`)
 }
 
 func addTask() {
