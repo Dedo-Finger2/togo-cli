@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 // Structs
@@ -73,10 +74,63 @@ func createToGoList() {
 	defer file.Close()
 
 	// Write down the string into the file
-	_, err = file.WriteString("ID,NAME,CREATED_AT,COMPLETED\n")
+	_, err = file.WriteString("ID,NAME,CREATED_AT,COMPLETED")
 	if err != nil {
 		panic(err)
 	}
+}
+
+func addTask() {
+	// Get togolist name
+	if strings.Contains(flag.Arg(1), "=") {
+		taskName = strings.Split(flag.Arg(1), "=")[1]
+	} else {
+		taskName = flag.Arg(2)
+	}
+
+	// Validation
+	if taskName == "" {
+		fmt.Println("name cannot be empty.")
+		return
+	}
+
+	// Get current user
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
+
+	files, err := os.ReadDir(outputPath)
+	if err != nil {
+		panic(err)
+	}
+
+	userToGoListFile := files[0].Name()
+
+	file, err := os.OpenFile(filepath.Join(outputPath, userToGoListFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	currentDateTime := time.Now().Local().Format(time.RFC1123)
+
+	task := Task{
+		ID:        1,
+		Name:      taskName,
+		CreatedAt: currentDateTime,
+		Completed: false,
+	}
+
+	_, err = file.WriteString(fmt.Sprintf("\n%d,%s,%s,%t", task.ID, task.Name, task.CreatedAt, task.Completed))
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("new task added.")
 }
 
 func main() {
@@ -85,7 +139,7 @@ func main() {
 	if len(flag.Args()) > 1 {
 		switch command {
 		case "add":
-			fmt.Println("Wanna a break from the adds?" + taskName)
+			addTask()
 			return
 		case "create":
 			createToGoList()
