@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -105,6 +106,25 @@ func createJsonIdStorageFile() {
 	file.WriteString(`{ "id": 0 }`)
 }
 
+func updateJsonStoreLastId(id int64) {
+	// Get current user
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
+
+	file, err := os.OpenFile(filepath.Join(outputPath, "ids.json"), os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	file.WriteString(fmt.Sprintf(`{ "id":%d }`, id))
+}
+
 func addTask() {
 	// Get togolist name
 	if strings.Contains(flag.Arg(1), "=") {
@@ -125,15 +145,53 @@ func addTask() {
 		panic(err)
 	}
 
+	// Create output
 	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
 
+	// Read all files in the to do list dir
 	files, err := os.ReadDir(outputPath)
 	if err != nil {
 		panic(err)
 	}
 
+	// Get the first file name.extension
 	userToGoListFile := files[0].Name()
 
+	// Get current time
+	currentDateTime := time.Now().Local().Format(time.RFC1123)
+
+	// Read the content of the ids.json
+	jsonData, err := os.ReadFile(filepath.Join(outputPath, "ids.json"))
+	if err != nil {
+		panic(err)
+	}
+
+	// Payload structure
+	type JsonPayload struct {
+		ID int64 `json:"id"`
+	}
+
+	// Payload
+	var payload JsonPayload
+
+	// Parse json into the variable
+	err = json.Unmarshal(jsonData, &payload)
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new task
+	task := Task{
+		ID:        payload.ID + 1,
+		Name:      taskName,
+		CreatedAt: currentDateTime,
+		Completed: false,
+	}
+
+	// Update the ID
+	updateJsonStoreLastId(payload.ID + 1)
+
+	// Open to do list file
 	file, err := os.OpenFile(filepath.Join(outputPath, userToGoListFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
@@ -141,15 +199,7 @@ func addTask() {
 
 	defer file.Close()
 
-	currentDateTime := time.Now().Local().Format(time.RFC1123)
-
-	task := Task{
-		ID:        1,
-		Name:      taskName,
-		CreatedAt: currentDateTime,
-		Completed: false,
-	}
-
+	// Appends task to the to do list file
 	_, err = file.WriteString(fmt.Sprintf("\n%d,%s,%s,%t", task.ID, task.Name, task.CreatedAt, task.Completed))
 	if err != nil {
 		panic(err)
