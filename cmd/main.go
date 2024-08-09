@@ -158,6 +158,11 @@ func addTask() {
 		panic(err)
 	}
 
+	if len(files) < 2 {
+		fmt.Println("to go list not created. try 'togo create --name Todo'")
+		return
+	}
+
 	// Get the first file name.extension
 	userToGoListFile := files[0].Name()
 
