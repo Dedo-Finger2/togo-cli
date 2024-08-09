@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"text/tabwriter"
 	"time"
 )
 
@@ -35,11 +36,38 @@ var listCompletedTasks string
 
 // Initializing the flags
 func init() {
+	flag.Usage = help
 	flag.StringVar(&toGoListName, "name", "", "sets a name for your todo list.")
 	flag.StringVar(&taskName, "task", "", "sets a name for a task.")
 	flag.StringVar(&taskID, "id", "", "chooses a task id")
 	flag.StringVar(&listCompletedTasks, "completed", "", "list only completed tasks")
 	flag.Parse()
+}
+
+func help() {
+	fmt.Println("------------------------------------------------")
+	fmt.Println("# TOGO - CLI")
+	fmt.Println("------------------------------------------------")
+
+	writer := tabwriter.NewWriter(os.Stdout, 0, 10, 2, ' ', tabwriter.Debug)
+
+	defer writer.Flush()
+
+	helpCommands := map[string]string{
+		"create --name={NAME}":  "creates a new todo list.",
+		"add --task={NAME}":     "adds a task into your todo list.",
+		"delete --id={INT}":     "deletes a given task by it's id.",
+		"complete --id={INT}":   "completes a given task by it's id.",
+		"uncomplete --id={INT}": "uncompletes a given task by it's id.",
+		"list":                  "lists all uncompleted tasks.",
+		"list --all":            "lists all tasks.",
+		"list --completed":      "lists all completed tasks.",
+	}
+
+	fmt.Fprint(writer, "COMMAND NAME\t COMMAND DESCRIPTION\n")
+	for command, description := range helpCommands {
+		fmt.Fprint(writer, "> ", command, " \t ", description, "\n")
+	}
 }
 
 func createToGoList() {
