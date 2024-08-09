@@ -318,6 +318,8 @@ func completeTask() {
 
 	defer writeFile.Close()
 
+	var taskFound = false
+
 	for _, line := range content {
 		var (
 			fileTaskID        = line[0]
@@ -326,11 +328,21 @@ func completeTask() {
 			fileTaskCompleted = line[3]
 		)
 
-		if taskID == fileTaskID {
+		if taskID == fileTaskID && fileTaskCompleted == "true" {
+			fmt.Println("task already completed.")
+			taskFound = true
+		}
+
+		if taskID == fileTaskID && fileTaskCompleted != "true" {
 			fileTaskCompleted = "true"
+			taskFound = true
 		}
 
 		writeFile.WriteString(fmt.Sprintf("%s,%s,%s,%s\n", fileTaskID, fileTaskName, fileTaskCreatedAt, fileTaskCompleted))
+	}
+
+	if !taskFound {
+		fmt.Println("task with id '" + taskID + "' was not found.")
 	}
 }
 
