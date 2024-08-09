@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -208,16 +209,58 @@ func addTask() {
 	fmt.Println("new task added.")
 }
 
+func listTasks() {
+	// Get current user
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	// Create output
+	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
+
+	files, err := os.ReadDir(outputPath)
+	if err != nil {
+		panic(err)
+	}
+
+	userToGoList := files[0].Name()
+
+	file, err := os.Open(filepath.Join(outputPath, userToGoList))
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+
+	content, err := csvReader.ReadAll()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("----------------------")
+	fmt.Println("# - " + userToGoList)
+	fmt.Println("----------------------")
+	for _, line := range content {
+		fmt.Println(strings.Join(line, "\t"))
+	}
+}
+
 func main() {
 	var command string = flag.Arg(0)
 
-	if len(flag.Args()) > 1 {
+	if len(flag.Args()) > 0 {
 		switch command {
 		case "add":
 			addTask()
 			return
 		case "create":
 			createToGoList()
+			return
+		case "list":
+			listTasks()
 			return
 		default:
 			fmt.Println(fmt.Sprintf("command '%s' not found.", command))
