@@ -149,7 +149,7 @@ func updateJsonStoreLastId(id int64) {
 
 	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
 
-	file, err := os.OpenFile(filepath.Join(outputPath, "ids.json"), os.O_WRONLY, os.ModePerm)
+	file, err := os.OpenFile(filepath.Join(outputPath, "ids.json"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		panic(err)
 	}
