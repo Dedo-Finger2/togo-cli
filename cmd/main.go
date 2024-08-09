@@ -31,12 +31,14 @@ const (
 var toGoListName string
 var taskName string
 var taskID string
+var listCompletedTasks string
 
 // Initializing the flags
 func init() {
 	flag.StringVar(&toGoListName, "name", "", "sets a name for your todo list.")
 	flag.StringVar(&taskName, "task", "", "sets a name for a task.")
 	flag.StringVar(&taskID, "id", "", "chooses a task id")
+	flag.StringVar(&listCompletedTasks, "completed", "", "list only completed tasks")
 	flag.Parse()
 }
 
@@ -218,6 +220,16 @@ func addTask() {
 }
 
 func listTasks() {
+	if len(flag.Args()) > 1 {
+		switch flag.Arg(1) {
+		case "--completed":
+			listCompletedOnly()
+			return
+		default:
+			fmt.Println("invalid argument. listing uncompleted tasks instead.")
+		}
+	}
+
 	// Get current user
 	user, err := user.Current()
 	if err != nil {
@@ -261,6 +273,57 @@ func listTasks() {
 		)
 
 		if taskCompleted == "true" {
+			continue
+		}
+
+		fmt.Println(strings.Join(formatedLine[:], "\t"))
+	}
+}
+
+func listCompletedOnly() {
+	// Get current user
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	// Create output
+	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
+
+	files, err := os.ReadDir(outputPath)
+	if err != nil {
+		panic(err)
+	}
+
+	userToGoList := files[0].Name()
+
+	file, err := os.Open(filepath.Join(outputPath, userToGoList))
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+
+	content, err := csvReader.ReadAll()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("-------------------------------")
+	fmt.Println("# - " + userToGoList)
+	fmt.Println("-------------------------------")
+	for idx, line := range content {
+		var (
+			taskID        = line[0]
+			taskName      = line[1]
+			taskCreatedAt = strings.Split(line[2], " ")[0] // Removes time
+			taskCompleted = line[3]
+			formatedLine  = [3]string{taskID, taskName, taskCreatedAt}
+		)
+
+		if taskCompleted != "true" && idx != 0 {
 			continue
 		}
 
