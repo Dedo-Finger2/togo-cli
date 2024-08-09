@@ -240,11 +240,18 @@ func listTasks() {
 		panic(err)
 	}
 
-	fmt.Println("----------------------")
+	fmt.Println("-------------------------------")
 	fmt.Println("# - " + userToGoList)
-	fmt.Println("----------------------")
+	fmt.Println("-------------------------------")
 	for _, line := range content {
-		fmt.Println(strings.Join(line, "\t"))
+		var (
+			taskID        = line[0]
+			taskName      = line[1]
+			taskCreatedAt = strings.Split(line[2], " ")[0] // Removes time
+			formatedLine  = [3]string{taskID, taskName, taskCreatedAt}
+		)
+
+		fmt.Println(strings.Join(formatedLine[:], "\t"))
 	}
 }
 
