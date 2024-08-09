@@ -9,6 +9,7 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -29,11 +30,13 @@ const (
 // Flags
 var toGoListName string
 var taskName string
+var taskID string
 
 // Initializing the flags
 func init() {
 	flag.StringVar(&toGoListName, "name", "", "sets a name for your todo list.")
 	flag.StringVar(&taskName, "task", "", "sets a name for a task.")
+	flag.StringVar(&taskID, "id", "", "chooses a task id")
 	flag.Parse()
 }
 
@@ -255,6 +258,77 @@ func listTasks() {
 	}
 }
 
+func completeTask() {
+	// Get togolist name
+	if strings.Contains(flag.Arg(1), "=") {
+		taskID = strings.Split(flag.Arg(1), "=")[1]
+	} else {
+		taskID = flag.Arg(2)
+	}
+
+	if taskID == "" {
+		fmt.Println("invalid task id.")
+		return
+	}
+
+	if convertedValue, err := strconv.Atoi(taskID); err != nil || convertedValue == 0 {
+		fmt.Println("invalid task id.")
+		return
+	}
+
+	// Get current user
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	// Create output
+	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
+
+	files, err := os.ReadDir(outputPath)
+	if err != nil {
+		panic(err)
+	}
+
+	userToGoList := files[0].Name()
+
+	file, err := os.Open(filepath.Join(outputPath, userToGoList))
+	if err != nil {
+		panic(err)
+	}
+
+	csvReader := csv.NewReader(file)
+
+	content, err := csvReader.ReadAll()
+	if err != nil {
+		panic(err)
+	}
+
+	file.Close()
+
+	writeFile, err := os.OpenFile(filepath.Join(outputPath, userToGoList), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		panic(err)
+	}
+
+	defer writeFile.Close()
+
+	for _, line := range content {
+		var (
+			fileTaskID        = line[0]
+			fileTaskName      = line[1]
+			fileTaskCreatedAt = line[2]
+			fileTaskCompleted = line[3]
+		)
+
+		if taskID == fileTaskID {
+			fileTaskCompleted = "true"
+		}
+
+		writeFile.WriteString(fmt.Sprintf("%s,%s,%s,%s\n", fileTaskID, fileTaskName, fileTaskCreatedAt, fileTaskCompleted))
+	}
+}
+
 func main() {
 	var command string = flag.Arg(0)
 
@@ -268,6 +342,9 @@ func main() {
 			return
 		case "list":
 			listTasks()
+			return
+		case "complete":
+			completeTask()
 			return
 		default:
 			fmt.Println(fmt.Sprintf("command '%s' not found.", command))
