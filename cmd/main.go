@@ -22,7 +22,7 @@ type Task struct {
 
 // Constants
 const (
-	TOGOLISTFILEEXTENSION string = ".txt"
+	TOGOLISTFILEEXTENSION string = ".csv"
 )
 
 // Flags
@@ -158,7 +158,7 @@ func addTask() {
 	userToGoListFile := files[0].Name()
 
 	// Get current time
-	currentDateTime := time.Now().Local().Format(time.RFC1123)
+	currentDateTime := time.Now().Local().Format(time.DateTime)
 
 	// Read the content of the ids.json
 	jsonData, err := os.ReadFile(filepath.Join(outputPath, "ids.json"))
