@@ -11,8 +11,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"text/tabwriter"
 	"time"
+
+	cliPackage "github.com/Dedo-Finger2/todo-list-cli/internal/cli"
 )
 
 // Structs
@@ -28,58 +29,36 @@ const (
 	TOGOLISTFILEEXTENSION string = ".csv"
 )
 
-// Flags
-var toGoListName string
-var taskName string
-var taskID string
-var listCompletedTasks string
+var (
+	toDoListName       string
+	taskName           string
+	taskID             string
+	listCompletedTasks string
+)
 
-// Initializing the flags
 func init() {
-	flag.Usage = help
-	flag.StringVar(&toGoListName, "name", "", "sets a name for your todo list.")
-	flag.StringVar(&taskName, "task", "", "sets a name for a task.")
-	flag.StringVar(&taskID, "id", "", "chooses a task id")
-	flag.StringVar(&listCompletedTasks, "completed", "", "list only completed tasks")
-	flag.Parse()
-}
+	cli := cliPackage.Cli{}
 
-func help() {
-	fmt.Println("------------------------------------------------")
-	fmt.Println("# TOGO - CLI")
-	fmt.Println("------------------------------------------------")
+	flag.Usage = cli.Help
 
-	writer := tabwriter.NewWriter(os.Stdout, 0, 10, 2, ' ', tabwriter.Debug)
+	cli.AddFlag("name", "sets a name for your todo list.", &toDoListName)
+	cli.AddFlag("task", "sets a name for a task.", &taskName)
+	cli.AddFlag("id", "chooses a task id", &taskID)
+	cli.AddFlag("completed", "list only completed tasks", &listCompletedTasks)
 
-	defer writer.Flush()
-
-	helpCommands := map[string]string{
-		"create --name={NAME}":  "creates a new todo list.",
-		"add --task={NAME}":     "adds a task into your todo list.",
-		"delete --id={INT}":     "deletes a given task by it's id.",
-		"complete --id={INT}":   "completes a given task by it's id.",
-		"uncomplete --id={INT}": "uncompletes a given task by it's id.",
-		"list":                  "lists all uncompleted tasks.",
-		"list --all":            "lists all tasks.",
-		"list --completed":      "lists all completed tasks.",
-	}
-
-	fmt.Fprint(writer, "COMMAND NAME\t COMMAND DESCRIPTION\n")
-	for command, description := range helpCommands {
-		fmt.Fprint(writer, "> ", command, " \t ", description, "\n")
-	}
+	cli.Run()
 }
 
 func createToGoList() {
 	// Get togolist name
 	if strings.Contains(flag.Arg(1), "=") {
-		toGoListName = strings.Split(flag.Arg(1), "=")[1]
+		toDoListName = strings.Split(flag.Arg(1), "=")[1]
 	} else {
-		toGoListName = flag.Arg(2)
+		toDoListName = flag.Arg(2)
 	}
 
 	// Validation
-	if toGoListName == "" {
+	if toDoListName == "" {
 		fmt.Println("name cannot be empty.")
 		return
 	}
@@ -100,7 +79,7 @@ func createToGoList() {
 	}
 
 	// Create the file
-	file, err := os.Create(filepath.Join(outputPath, filepath.Base(toGoListName+TOGOLISTFILEEXTENSION)))
+	file, err := os.Create(filepath.Join(outputPath, filepath.Base(toDoListName+TOGOLISTFILEEXTENSION)))
 	if err != nil {
 		panic(err)
 	}
