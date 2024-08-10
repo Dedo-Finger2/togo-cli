@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 )
 
@@ -16,7 +17,16 @@ type Flag struct {
 	VariablePointer *string
 }
 
-var Flags = []Flag{}
+type Command struct {
+	Name        string
+	Description string
+	Handler     func()
+}
+
+var (
+	Flags    = []Flag{}
+	Commands = []Command{}
+)
 
 func (c *Cli) AddFlag(name, description string, variablePointer *string) {
 	flag := Flag{
@@ -26,6 +36,16 @@ func (c *Cli) AddFlag(name, description string, variablePointer *string) {
 	}
 
 	Flags = append(Flags, flag)
+}
+
+func (c *Cli) AddCommand(name, description string, handler func()) {
+	command := Command{
+		Name:        name,
+		Description: description,
+		Handler:     handler,
+	}
+
+	Commands = append(Commands, command)
 }
 
 func (c *Cli) Help() {
@@ -52,12 +72,38 @@ func (c *Cli) Help() {
 	for _, flag := range Flags {
 		fmt.Fprint(writer, "> --", flag.Name, " \t ", flag.Description, "\n")
 	}
+
+	fmt.Fprint(writer, "\nCOMMAND NAME\t COMMAND DESCRIPTION\n")
+	for _, command := range Commands {
+		fmt.Fprint(writer, "> ", command.Name, " \t ", command.Description, "\n")
+	}
 }
 
-func (c *Cli) Run() {
+func (c *Cli) ParseFlagsAndCommands() {
 	for _, f := range Flags {
 		flag.StringVar(f.VariablePointer, f.Name, "", f.Description)
 	}
 
 	flag.Parse()
+}
+
+func (c *Cli) Start() {
+	input := strings.ToUpper(flag.Arg(0))
+	commandFound := false
+
+	if len(flag.Args()) > 0 {
+		for _, command := range Commands {
+			if input == strings.ToUpper(command.Name) {
+				command.Handler()
+				commandFound = true
+				break
+			}
+		}
+
+		if !commandFound {
+			fmt.Println("Command not found.")
+		}
+	} else {
+		fmt.Println("Use the flag '--help' to see the avaliables commands.")
+	}
 }

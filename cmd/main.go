@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	cliPackage "github.com/Dedo-Finger2/todo-list-cli/internal/cli"
+	cliPkg "github.com/Dedo-Finger2/todo-list-cli/internal/cli"
 )
 
 // Structs
@@ -36,9 +36,9 @@ var (
 	listCompletedTasks string
 )
 
-func init() {
-	cli := cliPackage.Cli{}
+var cli = cliPkg.Cli{}
 
+func init() {
 	flag.Usage = cli.Help
 
 	cli.AddFlag("name", "sets a name for your todo list.", &toDoListName)
@@ -46,7 +46,7 @@ func init() {
 	cli.AddFlag("id", "chooses a task id", &taskID)
 	cli.AddFlag("completed", "list only completed tasks", &listCompletedTasks)
 
-	cli.Run()
+	cli.ParseFlagsAndCommands()
 }
 
 func createToGoList() {
@@ -633,34 +633,5 @@ func deleteTask() {
 }
 
 func main() {
-	var command string = flag.Arg(0)
-
-	if len(flag.Args()) > 0 {
-		switch command {
-		case "add":
-			addTask()
-			return
-		case "create":
-			createToGoList()
-			return
-		case "list":
-			listTasks()
-			return
-		case "complete":
-			completeTask()
-			return
-		case "uncomplete":
-			unCompleteTask()
-			return
-		case "delete":
-			deleteTask()
-			return
-		default:
-			fmt.Println(fmt.Sprintf("command '%s' not found.", command))
-			return
-		}
-	} else {
-		fmt.Println("use --help to see all avaliables commands.")
-		return
-	}
+	cli.Start()
 }
