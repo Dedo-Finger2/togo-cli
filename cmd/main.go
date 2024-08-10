@@ -46,7 +46,7 @@ func init() {
 	cli.AddFlag("id", "chooses a task id", &taskID)
 	cli.AddFlag("completed", "list only completed tasks", &listCompletedTasks)
 
-	cli.ParseFlagsAndCommands()
+	cli.ParseFlags()
 }
 
 func createToGoList() {

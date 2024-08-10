@@ -57,7 +57,7 @@ func (c *Cli) Help() {
 	}
 }
 
-func (c *Cli) ParseFlagsAndCommands() {
+func (c *Cli) ParseFlags() {
 	for _, f := range Flags {
 		flag.StringVar(f.VariablePointer, f.Name, "", f.Description)
 	}
