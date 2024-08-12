@@ -51,9 +51,9 @@ func listAllTasks() {
 			taskName      = line[1]
 			taskCreatedAt = strings.Split(line[2], " ")[0] // Removes time
 			taskCompleted = line[3]
-			formatedLine  = [4]string{taskID, taskName, taskCreatedAt, taskCompleted}
+			formattedLine = [4]string{taskID, taskName, taskCreatedAt, taskCompleted}
 		)
 
-		fmt.Println(strings.Join(formatedLine[:], "\t"))
+		fmt.Println(strings.Join(formattedLine[:], "\t"))
 	}
 }
