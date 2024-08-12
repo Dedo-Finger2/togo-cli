@@ -15,10 +15,10 @@ func ListTasks() {
 	if len(flag.Args()) > 1 {
 		switch flag.Arg(1) {
 		case "--completed":
-			ListCompletedTasks()
+			listCompletedTasks()
 			return
 		case "--all":
-			ListAllTasks()
+			listAllTasks()
 			return
 		default:
 			fmt.Println("invalid argument. listing uncompleted tasks instead.")

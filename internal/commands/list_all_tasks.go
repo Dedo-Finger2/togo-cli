@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func ListAllTasks() {
+func listAllTasks() {
 
 	// Get current user
 	user, err := user.Current()
