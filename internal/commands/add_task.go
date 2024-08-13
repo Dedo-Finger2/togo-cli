@@ -18,11 +18,7 @@ func AddTask() {
 	var taskName string
 	utils.DefineFlagValue(&taskName)
 
-	// Validation
-	if taskName == "" {
-		errors.ResourceCannotBeEmpty("Task Name")
-		os.Exit(1)
-	}
+	utils.Validator("Task-Name", &taskName, []string{"not-null"})
 
 	// Get current user
 	user, err := utils.GetCurrentUser()
