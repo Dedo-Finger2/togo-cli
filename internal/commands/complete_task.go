@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/user"
 	"path"
@@ -23,12 +24,12 @@ func CompleteTask() {
 	}
 
 	if taskID == "" {
-		fmt.Println("invalid task id.")
+		log.Println("[WARN]: TaskID cannot be empty.")
 		return
 	}
 
 	if convertedValue, err := strconv.Atoi(taskID); err != nil || convertedValue == 0 {
-		fmt.Println("invalid task id.")
+		log.Println("[WARN]: Invalid task id, it must be a valid integer.")
 		return
 	}
 
@@ -80,7 +81,7 @@ func CompleteTask() {
 		)
 
 		if taskID == fileTaskID && fileTaskCompleted == "true" {
-			fmt.Println("task already completed.")
+			log.Println("[WARN]: This task is already completed.")
 			taskFound = true
 		}
 
@@ -93,7 +94,7 @@ func CompleteTask() {
 	}
 
 	if !taskFound {
-		fmt.Println("task with id '" + taskID + "' was not found.")
+		log.Println("[ERROR]: Task with id '" + taskID + "' was not found in your to-go list.")
 	}
 
 }

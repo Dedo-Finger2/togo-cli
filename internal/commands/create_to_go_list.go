@@ -2,7 +2,7 @@ package commands
 
 import (
 	"flag"
-	"fmt"
+	"log"
 	"os"
 	"os/user"
 	"path"
@@ -25,7 +25,7 @@ func CreateToGoList() {
 
 	// Validation
 	if toDoListName == "" {
-		fmt.Println("name cannot be empty.")
+		log.Println("[ERROR]: To-go list's name cannot be empty.")
 		return
 	}
 

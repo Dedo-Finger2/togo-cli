@@ -3,6 +3,7 @@ package cli
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"text/tabwriter"
@@ -79,7 +80,7 @@ func (c *Cli) Start() {
 		}
 
 		if !commandFound {
-			fmt.Println("Command not found.")
+			log.Println("[WARN]: Command not found.")
 		}
 	} else {
 		fmt.Println("Use the flag '--help' to see the available commands.")

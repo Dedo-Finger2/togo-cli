@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/user"
 	"path"
@@ -27,7 +28,7 @@ func AddTask() {
 
 	// Validation
 	if taskName == "" {
-		fmt.Println("name cannot be empty.")
+		log.Println("[ERROR]: Task name cannot be empty.")
 		return
 	}
 
@@ -47,7 +48,7 @@ func AddTask() {
 	}
 
 	if len(files) < 2 {
-		fmt.Println("to go list not created. try 'togo create --name Todo'")
+		log.Println("[WARN]: To go list not created yet. Try 'togo create --name Todo'")
 		return
 	}
 
@@ -102,5 +103,5 @@ func AddTask() {
 		panic(err)
 	}
 
-	fmt.Println("new task added.")
+	log.Println("[SUCCESS]: New task added to your to-go list.")
 }
