@@ -52,11 +52,35 @@ The application enables users to create, manage, and track a to do list with a r
 
 ## ❓ Build it from source
 
-> Comming soon...
+```bash
+git clone this
+```
+
+```bash
+cd togo-cli
+```
+
+```bash
+make build-linux OR make build-windows
+```
+
+Follow the next instrutions in the Usage section.
 
 ## 🔨 Usage
 
-First of all, go to Releases and download the executable of the project. After that move it to this path `COMMING SOON` and either restart your terminal or logout your session. After that you'll be able to run the commands with ease!
+### Linux
+
+After dowloading the binary (or after building it from source) use the following command.
+
+```bash
+sudo mv togo /usr/local/bin/
+```
+
+### Windows
+
+> Comming Soon...
+
+### Commands
 
 > Creates a new To Go tasklist at /home/{YOUR_NAME}/Documents/ToGoLists
 ```
