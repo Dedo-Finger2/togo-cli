@@ -1,6 +1,6 @@
 <h1 align="center">✅ To Go List CLI</h1>
 
-<img src="https://github.com/Dedo-Finger2/togo-cli/blob/refactor/public/images/cover.png?raw=true" />
+<img src="https://github.com/Dedo-Finger2/togo-cli/blob/master/public/images/cover.png?raw=true" />
 
 <p>
   <img src="https://img.shields.io/badge/--00ADD8?logo=go&logoColor=ffffff" />
