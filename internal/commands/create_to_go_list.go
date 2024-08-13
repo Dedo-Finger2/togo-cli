@@ -1,64 +1,47 @@
 package commands
 
 import (
-	"flag"
-	"log"
+	"log/slog"
 	"os"
-	"os/user"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/Dedo-Finger2/todo-list-cli/internal/utils"
 )
 
 func CreateToGoList() {
 	var toDoListName string
-	const TOGOLISTFILEEXTENSION string = ".csv"
+	utils.DefineFlagValue(&toDoListName)
+	const TO_GO_LIST_FILE_EXTENSION string = ".csv"
 
-	// Get togolist name
-	if strings.Contains(flag.Arg(1), "=") {
-		toDoListName = strings.Split(flag.Arg(1), "=")[1]
-	} else {
-		toDoListName = flag.Arg(2)
-	}
+	utils.Validator("toDoListName", &toDoListName, []string{"not-null"})
 
-	// Validation
-	if toDoListName == "" {
-		log.Println("[ERROR]: To-go list's name cannot be empty.")
-		return
-	}
-
-	// Get current user
-	user, err := user.Current()
+	user, err := utils.GetCurrentUser()
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to get current user.", "error", err)
+		os.Exit(1)
 	}
 
-	// Creates output path
 	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
 
-	// Make a new DIR
-	err = os.MkdirAll(outputPath, os.ModePerm)
-	if err != nil {
-		panic(err)
+	if err = os.MkdirAll(outputPath, os.ModePerm); err != nil {
+		slog.Error("Error trying to create ToGoList folder.", "error", err)
+		os.Exit(1)
 	}
 
-	// Create the file
-	file, err := os.Create(filepath.Join(outputPath, filepath.Base(toDoListName+TOGOLISTFILEEXTENSION)))
+	file, err := os.Create(filepath.Join(outputPath, filepath.Base(toDoListName+TO_GO_LIST_FILE_EXTENSION)))
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to create ToGoList.csv file.", "error", err)
+		os.Exit(1)
 	}
 
-	// Create json id storage file
 	utils.CreateJsonIdStorageFile()
 
-	// Closes the file at the end of the func
 	defer file.Close()
 
-	// Write down the string into the file
 	_, err = file.WriteString("ID,NAME,CREATED_AT,COMPLETED")
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to add CSV headers", "error", err)
+		os.Exit(1)
 	}
 }
