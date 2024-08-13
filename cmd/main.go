@@ -5,9 +5,10 @@ import (
 
 	cliPkg "github.com/Dedo-Finger2/todo-list-cli/internal/cli"
 	"github.com/Dedo-Finger2/todo-list-cli/internal/commands"
+	"github.com/Dedo-Finger2/todo-list-cli/internal/types"
 )
 
-var cli = cliPkg.Cli{}
+var cli types.Cli = &cliPkg.Cli{}
 
 func init() {
 	var (
