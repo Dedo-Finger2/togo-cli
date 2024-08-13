@@ -1,11 +1,9 @@
 package commands
 
 import (
-	"encoding/csv"
 	"fmt"
 	"log/slog"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/Dedo-Finger2/todo-list-cli/internal/errors"
@@ -18,41 +16,27 @@ func CompleteTask() {
 
 	utils.Validator("TaskID", &taskID, []string{"not-null", "string-to-integer"})
 
-	// Get current user
-	user, err := utils.GetCurrentUser()
+	files, err := utils.GetAllFilesInToGoListFile()
 	if err != nil {
-		slog.Error("Error trying to get current user.", "error", err)
+		slog.Error("Failed to get all files from ToGoList folder.", "error", err)
 		os.Exit(1)
 	}
 
-	// Create output
-	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
-
-	files, err := os.ReadDir(outputPath)
+	toGoListFolderPath, err := utils.GetToGoListFolderPath()
 	if err != nil {
-		slog.Error("Error trying to read ToGoLists DIR.", "error", err)
+		slog.Error("Failed to get ToGoList folder path.", "error", err)
 		os.Exit(1)
 	}
 
-	userToGoList := files[0].Name()
+	userToGoListName := files[0].Name()
 
-	file, err := os.Open(filepath.Join(outputPath, userToGoList))
+	userToGoListFileContent, err := utils.GetUserToGoListContent(toGoListFolderPath, userToGoListName)
 	if err != nil {
-		slog.Error("Error trying to open userToGoList file.", "error", err)
+		slog.Error("Failed on trying to get User's ToGo List file content", "error", err)
 		os.Exit(1)
 	}
 
-	csvReader := csv.NewReader(file)
-
-	content, err := csvReader.ReadAll()
-	if err != nil {
-		slog.Error("Error trying to read CSV file content.", "error", err)
-		os.Exit(1)
-	}
-
-	file.Close()
-
-	writeFile, err := os.OpenFile(filepath.Join(outputPath, userToGoList), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	writeFile, err := os.OpenFile(filepath.Join(toGoListFolderPath, userToGoListName), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		slog.Error("Error trying to open userToGoList file.", "error", err)
 		os.Exit(1)
@@ -62,7 +46,7 @@ func CompleteTask() {
 
 	var taskFound = false
 
-	for _, line := range content {
+	for _, line := range userToGoListFileContent {
 		var (
 			fileTaskID        = line[0]
 			fileTaskName      = line[1]
@@ -77,6 +61,7 @@ func CompleteTask() {
 
 		if taskID == fileTaskID && fileTaskCompleted != "true" {
 			fileTaskCompleted = "true"
+			slog.Info("Task completed!", "TaskID", taskID)
 			taskFound = true
 		}
 
@@ -86,6 +71,4 @@ func CompleteTask() {
 	if !taskFound {
 		errors.ResourceNotFound("TaskID")
 	}
-
-	slog.Info("Task completed!", "TaskID", taskID)
 }
