@@ -86,4 +86,6 @@ func CompleteTask() {
 	if !taskFound {
 		errors.ResourceNotFound("TaskID")
 	}
+
+	slog.Info("Task completed!", "TaskID", taskID)
 }
