@@ -1,17 +1,27 @@
 <h1 align="center">To Go List CLI</h1>
 
-<p align="center">
-  A simple to do list CLI written in Go!
+<p>
+    <img src="https://img.shields.io/badge/--00ADD8?logo=go&logoColor=ffffff" />
+  
+  <img src="https://badgen.net/badge/icon/terminal?icon=terminal&label" />
+  <img src="https://badgen.net/badge/icon/windows?icon=windows&label" />
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
+</p>
+
+<img src="https://github.com/Dedo-Finger2/togo-cli/blob/refactor/public/images/cover.png?raw=true" />
+
+<p align="center">  
+  ✅ A <strong>simple</strong> to do list <strong>CLI</strong> written in <strong>Go</strong>! ✅ 
 </p>
 
 ---
 
-## About
+## 📝 About
 
 This CLI application is designed to manage a simple task list directly from the terminal. 
 The application enables users to create, manage, and track a to do list with a range of functionalities, all through straightforward terminal commands.
 
-## Key Features
+## 🔑 Key Features
 
 | Feature         | Description                                                                                                   |
 |-----------------|---------------------------------------------------------------------------------------------------------------|
@@ -23,7 +33,7 @@ The application enables users to create, manage, and track a to do list with a r
 | **Remove Tasks** | Delete tasks from the list.                                                                                     |
 | **View Tasks**  | Tasks can be displayed in a tabular format within the terminal, showing both completed and pending tasks.      |
 
-## Requirements
+## 🌳 Requirements
 
 ### Functional
 
@@ -43,7 +53,11 @@ The application enables users to create, manage, and track a to do list with a r
 - [x] Tasks must be removed using their ID.
 - [x] Only incomplete tasks can be completed, and only completed tasks can be uncompleted.
 
-## Usage
+## ❓ Build it from source
+
+> Comming soon...
+
+## 🔨 Usage
 
 First of all, go to Releases and download the executable of the project. After that move it to this path `COMMING SOON` and either restart your terminal or logout your session. After that you'll be able to run the commands with ease!
 
@@ -87,7 +101,7 @@ togo list --all
 togo list --completed
 ```
 
-## Contact me
+## 📱 Contact me
 
 - LinkedIn: https://www.linkedin.com/in/antonio-mauricio-4645832b3/
 - Instagram: https://www.instagram.com/antonioalmeida2003/
