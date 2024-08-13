@@ -78,7 +78,8 @@ sudo mv togo /usr/local/bin/
 
 ### Windows
 
-> Comming Soon...
+After dowloading the binary (or after building it from source) move the `togo.exe` file into any folder that is already in the PATH of your machine.
+Usually the paths: `C:\Program Files\Togo\` or `C:\Users\<YOUR_USER>\AppData\Local\Programs\Togo\` are okay to use.
 
 ### Commands
 
