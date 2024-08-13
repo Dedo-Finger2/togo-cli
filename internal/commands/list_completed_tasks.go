@@ -3,34 +3,36 @@ package commands
 import (
 	"encoding/csv"
 	"fmt"
+	"log/slog"
 	"os"
-	"os/user"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/Dedo-Finger2/todo-list-cli/internal/utils"
 )
 
 func listCompletedTasks() {
-
-	// Get current user
-	user, err := user.Current()
+	user, err := utils.GetCurrentUser()
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to get current user.", "error", err)
+		os.Exit(1)
 	}
 
-	// Create output
 	outputPath := path.Join(user.HomeDir, "Documents", "ToGoLists")
 
 	files, err := os.ReadDir(outputPath)
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to read ToGoLists DIR.", "error", err)
+		os.Exit(1)
 	}
 
 	userToGoList := files[0].Name()
 
 	file, err := os.Open(filepath.Join(outputPath, userToGoList))
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to open userToGoList file.", "error", err)
+		os.Exit(1)
 	}
 
 	defer file.Close()
@@ -39,7 +41,8 @@ func listCompletedTasks() {
 
 	content, err := csvReader.ReadAll()
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to read CSV file content.", "error", err)
+		os.Exit(1)
 	}
 
 	fmt.Println("-------------------------------")
