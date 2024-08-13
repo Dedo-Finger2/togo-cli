@@ -82,6 +82,6 @@ func (c *Cli) Start() {
 			fmt.Println("Command not found.")
 		}
 	} else {
-		fmt.Println("Use the flag '--help' to see the avaliables commands.")
+		fmt.Println("Use the flag '--help' to see the available commands.")
 	}
 }
