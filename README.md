@@ -53,7 +53,7 @@ The application enables users to create, manage, and track a to do list with a r
 ## ❓ Build it from source
 
 ```bash
-git clone this
+git clone https://github.com/Dedo-Finger2/togo-cli.git
 ```
 
 ```bash
