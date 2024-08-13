@@ -1,18 +1,15 @@
-<h1 align="center">To Go List CLI</h1>
+<h1 align="center">✅ To Go List CLI</h1>
+
+<img src="https://github.com/Dedo-Finger2/togo-cli/blob/refactor/public/images/cover.png?raw=true" />
 
 <p>
-    <img src="https://img.shields.io/badge/--00ADD8?logo=go&logoColor=ffffff" />
-  
+  <img src="https://img.shields.io/badge/--00ADD8?logo=go&logoColor=ffffff" />
   <img src="https://badgen.net/badge/icon/terminal?icon=terminal&label" />
   <img src="https://badgen.net/badge/icon/windows?icon=windows&label" />
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
 </p>
 
-<img src="https://github.com/Dedo-Finger2/togo-cli/blob/refactor/public/images/cover.png?raw=true" />
-
-<p align="center">  
-  ✅ A <strong>simple</strong> to do list <strong>CLI</strong> written in <strong>Go</strong>! ✅ 
-</p>
+<h3 align="center">✅ A <strong>simple</strong> to do list <strong>CLI</strong> written in <strong>Go</strong>! ✅</h3> 
 
 ---
 
