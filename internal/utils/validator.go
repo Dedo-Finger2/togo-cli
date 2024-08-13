@@ -16,7 +16,7 @@ func Validator(name string, value *string, rules []string) {
 		switch {
 		case rules[idx] == "not-null":
 			validateEmptyValues(name, value)
-		case rules[idx] == "integer":
+		case rules[idx] == "string-to-integer":
 			validateStringCanBeConvertedIntoInteger(value)
 		default:
 		}
