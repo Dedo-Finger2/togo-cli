@@ -2,41 +2,27 @@ package commands
 
 import (
 	"encoding/csv"
-	"flag"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
-	"os/user"
 	"path"
 	"path/filepath"
-	"strconv"
-	"strings"
+
+	"github.com/Dedo-Finger2/todo-list-cli/internal/errors"
+	"github.com/Dedo-Finger2/todo-list-cli/internal/utils"
 )
 
 func CompleteTask() {
 	var taskID string
+	utils.DefineFlagValue(&taskID)
 
-	// Get togolist name
-	if strings.Contains(flag.Arg(1), "=") {
-		taskID = strings.Split(flag.Arg(1), "=")[1]
-	} else {
-		taskID = flag.Arg(2)
-	}
-
-	if taskID == "" {
-		log.Println("[WARN]: TaskID cannot be empty.")
-		return
-	}
-
-	if convertedValue, err := strconv.Atoi(taskID); err != nil || convertedValue == 0 {
-		log.Println("[WARN]: Invalid task id, it must be a valid integer.")
-		return
-	}
+	utils.Validator("TaskID", &taskID, []string{"not-null", "string-to-integer"})
 
 	// Get current user
-	user, err := user.Current()
+	user, err := utils.GetCurrentUser()
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to get current user.", "error", err)
+		os.Exit(1)
 	}
 
 	// Create output
@@ -44,28 +30,32 @@ func CompleteTask() {
 
 	files, err := os.ReadDir(outputPath)
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to read ToGoLists DIR.", "error", err)
+		os.Exit(1)
 	}
 
 	userToGoList := files[0].Name()
 
 	file, err := os.Open(filepath.Join(outputPath, userToGoList))
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to open userToGoList file.", "error", err)
+		os.Exit(1)
 	}
 
 	csvReader := csv.NewReader(file)
 
 	content, err := csvReader.ReadAll()
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to read CSV file content.", "error", err)
+		os.Exit(1)
 	}
 
 	file.Close()
 
 	writeFile, err := os.OpenFile(filepath.Join(outputPath, userToGoList), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to open userToGoList file.", "error", err)
+		os.Exit(1)
 	}
 
 	defer writeFile.Close()
@@ -81,7 +71,7 @@ func CompleteTask() {
 		)
 
 		if taskID == fileTaskID && fileTaskCompleted == "true" {
-			log.Println("[WARN]: This task is already completed.")
+			slog.Warn("This task is already completed.")
 			taskFound = true
 		}
 
@@ -94,7 +84,6 @@ func CompleteTask() {
 	}
 
 	if !taskFound {
-		log.Println("[ERROR]: Task with id '" + taskID + "' was not found in your to-go list.")
+		errors.ResourceNotFound("TaskID")
 	}
-
 }
