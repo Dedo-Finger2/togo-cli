@@ -2,40 +2,33 @@ package commands
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
-	"os/user"
 	"path"
 	"path/filepath"
-	"strings"
 	"time"
 
+	"github.com/Dedo-Finger2/todo-list-cli/internal/errors"
 	"github.com/Dedo-Finger2/todo-list-cli/internal/types"
 	"github.com/Dedo-Finger2/todo-list-cli/internal/utils"
 )
 
 func AddTask() {
 	var taskName string
-
-	// Get togolist name
-	if strings.Contains(flag.Arg(1), "=") {
-		taskName = strings.Split(flag.Arg(1), "=")[1]
-	} else {
-		taskName = flag.Arg(2)
-	}
+	utils.DefineFlagValue(&taskName)
 
 	// Validation
 	if taskName == "" {
-		log.Println("[ERROR]: Task name cannot be empty.")
-		return
+		errors.ResourceCannotBeEmpty("Task Name")
+		os.Exit(1)
 	}
 
 	// Get current user
-	user, err := user.Current()
+	user, err := utils.GetCurrentUser()
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to get current user.", "error", err)
+		os.Exit(1)
 	}
 
 	// Create output
@@ -44,12 +37,13 @@ func AddTask() {
 	// Read all files in the to do list dir
 	files, err := os.ReadDir(outputPath)
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to get files in ToGoList DIR", "error", err)
+		os.Exit(1)
 	}
 
 	if len(files) < 2 {
-		log.Println("[WARN]: To go list not created yet. Try 'togo create --name Todo'")
-		return
+		errors.ResourceNotFound("To-go list")
+		os.Exit(1)
 	}
 
 	// Get the first file name.extension
@@ -61,7 +55,8 @@ func AddTask() {
 	// Read the content of the ids.json
 	jsonData, err := os.ReadFile(filepath.Join(outputPath, "ids.json"))
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to read ids.json file in ToGoList DIR.", "error", err)
+		os.Exit(1)
 	}
 
 	// Payload structure
@@ -75,7 +70,8 @@ func AddTask() {
 	// Parse json into the variable
 	err = json.Unmarshal(jsonData, &payload)
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to parse json content from ids.json into a variable.", "error", err)
+		os.Exit(1)
 	}
 
 	// Create a new task
@@ -92,7 +88,8 @@ func AddTask() {
 	// Open to do list file
 	file, err := os.OpenFile(filepath.Join(outputPath, userToGoListFile), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to open to-go list file.", "error", err)
+		os.Exit(1)
 	}
 
 	defer file.Close()
@@ -100,8 +97,9 @@ func AddTask() {
 	// Appends task to the to do list file
 	_, err = file.WriteString(fmt.Sprintf("\n%d,%s,%s,%t", task.ID, task.Name, task.CreatedAt, task.Completed))
 	if err != nil {
-		panic(err)
+		slog.Error("Error trying to update to-do list file.", "error", err)
+		os.Exit(1)
 	}
 
-	log.Println("[SUCCESS]: New task added to your to-go list.")
+	slog.Info("New task added to your to-go list.", "Task-Name", taskName)
 }
